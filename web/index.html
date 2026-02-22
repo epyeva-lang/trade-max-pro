@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>TRADE MAX PRO</title>
+
+<style>
+body {
+    background: #111;
+    color: #eee;
+    font-family: Arial;
+    padding: 30px;
+}
+
+h1 {
+    font-size: 34px;
+    margin-bottom: 30px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 20px;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #333;
+}
+
+th {
+    background: #222;
+}
+
+.strong-over { color: #00ff88; font-weight: bold; }
+.strong-under { color: #ff3b3b; font-weight: bold; }
+.medium { color: #ffaa00; font-weight: bold; }
+.weak { color: #888; }
+</style>
+</head>
+
+<body>
+
+<h1>TRADE MAX PRO – Goal Momentum</h1>
+
+<table>
+<thead>
+<tr>
+<th>Match</th>
+<th>Start</th>
+<th>Center</th>
+<th>Δ 10m</th>
+<th>Signal</th>
+<th>Confidence</th>
+</tr>
+</thead>
+<tbody id="data"></tbody>
+</table>
+
+<script>
+async function load() {
+
+    const res = await fetch("http://89.167.71.53:8000/matches");
+    const data = await res.json();
+
+    const tbody = document.getElementById("data");
+    tbody.innerHTML = "";
+
+    data.matches.forEach(m => {
+
+        if (!data.shortlist.includes(m.match_id)) return;
+
+        let cls = "weak";
+
+        if (m.signal.signal === "STRONG" && m.signal.direction === "OVER")
+            cls = "strong-over";
+        else if (m.signal.signal === "STRONG" && m.signal.direction === "UNDER")
+            cls = "strong-under";
+        else if (m.signal.signal === "MEDIUM")
+            cls = "medium";
+
+        tbody.innerHTML += `
+        <tr>
+            <td>${m.home} vs ${m.away}</td>
+            <td>${m.start}</td>
+            <td>${m.center ?? "-"}</td>
+            <td>${m.delta ?? "-"}</td>
+            <td class="${cls}">${m.signal.signal} ${m.signal.direction}</td>
+            <td class="${cls}">${m.signal.confidence}</td>
+        </tr>`;
+    });
+}
+
+load();
+setInterval(load, 60000);
+</script>
+
+</body>
+</html>

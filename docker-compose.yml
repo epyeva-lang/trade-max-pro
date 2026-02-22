@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+
+  backend:
+    build: .
+    container_name: trade-max-pro-backend
+    ports:
+      - "8000:8000"
+    environment:
+      ODDS_API_KEY: "b4f15c4cbdf37d3f2e035446cfd2f115"
+    restart: always
+
+  frontend:
+    image: nginx:latest
+    container_name: trade-max-pro-frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./web:/usr/share/nginx/html
+    restart: always
